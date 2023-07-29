@@ -3,8 +3,8 @@ package api
 import (
 	"net/http"
 
-	"github.com/ggymm/gopkg/common/constant"
-	"github.com/ggymm/gopkg/common/log"
+	"github.com/ggymm/gopkg/constant"
+	"github.com/ggymm/gopkg/log"
 
 	"github.com/gofiber/fiber/v2"
 )
