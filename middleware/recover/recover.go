@@ -1,11 +1,11 @@
 package recover
 
 import (
-	"github.com/ggymm/gopkg/constant"
-	"github.com/ggymm/gopkg/log"
-
 	"github.com/gofiber/fiber/v2"
 	"github.com/pkg/errors"
+
+	"github.com/ggymm/gopkg/constant"
+	"github.com/ggymm/gopkg/log"
 )
 
 func NewRecover() fiber.Handler {

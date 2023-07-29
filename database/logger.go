@@ -6,12 +6,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ggymm/gopkg/constant"
-	"github.com/ggymm/gopkg/log"
-
 	"github.com/pkg/errors"
 	"gorm.io/gorm/logger"
 	"gorm.io/gorm/utils"
+
+	"github.com/ggymm/gopkg/constant"
+	"github.com/ggymm/gopkg/log"
 )
 
 type CustomLog struct {

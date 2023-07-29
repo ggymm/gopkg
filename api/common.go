@@ -3,10 +3,10 @@ package api
 import (
 	"net/http"
 
+	"github.com/gofiber/fiber/v2"
+
 	"github.com/ggymm/gopkg/constant"
 	"github.com/ggymm/gopkg/log"
-
-	"github.com/gofiber/fiber/v2"
 )
 
 type Result struct {

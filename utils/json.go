@@ -1,10 +1,10 @@
 package utils
 
 import (
+	"github.com/goccy/go-json"
+
 	"github.com/ggymm/gopkg/constant"
 	"github.com/ggymm/gopkg/log"
-
-	"github.com/goccy/go-json"
 )
 
 func JsonEncode(data interface{}) string {
