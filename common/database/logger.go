@@ -6,8 +6,8 @@ import (
 	"strings"
 	"time"
 
-	"gopkg/common/constant"
-	"gopkg/common/log"
+	"github.com/ggymm/gopkg/common/constant"
+	"github.com/ggymm/gopkg/common/log"
 
 	"github.com/pkg/errors"
 	"gorm.io/gorm/logger"

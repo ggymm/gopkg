@@ -13,3 +13,8 @@ const (
 	APITraceError400 = "APITraceError400"
 	APITraceError500 = "APITraceError500"
 )
+
+const (
+	JsonEncodeError = "JsonEncodeError"
+	JsonDecodeError = "JsonDecodeError"
+)

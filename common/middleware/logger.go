@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"time"
 
-	"gopkg/common/constant"
-	"gopkg/common/log"
+	"github.com/ggymm/gopkg/common/constant"
+	"github.com/ggymm/gopkg/common/log"
 
 	"github.com/gofiber/fiber/v2"
 )

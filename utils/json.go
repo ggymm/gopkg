@@ -1,8 +1,8 @@
 package utils
 
 import (
-	"devops/pkg/common/constant"
-	"devops/pkg/common/log"
+	"github.com/ggymm/gopkg/common/constant"
+	"github.com/ggymm/gopkg/common/log"
 
 	"github.com/goccy/go-json"
 )

@@ -1,8 +1,8 @@
 package middleware
 
 import (
-	"gopkg/common/constant"
-	"gopkg/common/log"
+	"github.com/ggymm/gopkg/common/constant"
+	"github.com/ggymm/gopkg/common/log"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/pkg/errors"
