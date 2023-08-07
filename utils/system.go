@@ -38,7 +38,6 @@ func GetLocalIp() string {
 			}
 		}
 	}
-
 	return ""
 }
 
@@ -85,6 +84,5 @@ func GetLocalIpList(local bool) []string {
 		ipList = append(ipList, "127.0.0.1")
 		ipList = append(ipList, "localhost")
 	}
-
 	return ipList
 }
