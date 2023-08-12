@@ -3,6 +3,7 @@ package cast
 import (
 	"encoding/binary"
 	"math"
+	"time"
 )
 
 func ToBytes(value interface{}) []byte {
@@ -46,6 +47,9 @@ func ToBytes(value interface{}) []byte {
 		} else {
 			b = []byte{0}
 		}
+	case time.Duration:
+		b = make([]byte, 8)
+		binary.BigEndian.PutUint64(b, uint64(v))
 	}
 	return b
 }

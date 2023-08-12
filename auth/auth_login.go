@@ -1,12 +1,14 @@
 package auth
 
 import (
+	"time"
+
 	"github.com/pkg/errors"
 )
 
 type LoginConfig struct {
-	Device  string // 设备信息
-	Timeout int64  // 超时时间（单位s）
+	Device  string        // 设备信息
+	Timeout time.Duration // 超时时间（单位s）
 }
 
 func (a *Auth) Login(id int64, c LoginConfig) (string, error) {

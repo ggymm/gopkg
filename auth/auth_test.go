@@ -10,16 +10,16 @@ func InitAuth() {
 	err := Init(Config{
 		LogPath: "C:/Product/gopkg/temp/auth/auth.log",
 
-		Store: RoseDB,
-		RoseDBConfig: RoseDBConfig{
-			DirPath: "C:/Product/gopkg/temp/auth/storage",
+		Store: Local,
+		LocalConfig: LocalConfig{
+			Dir: "C:/Product/gopkg/temp/auth/storage",
 		},
 
 		Concurrent:    true,
 		ShareToken:    false,
 		MaxLoginCount: math.MaxInt,
 
-		TokenPrefix:    "ninelock-token",
+		TokenName:      "ninelock-token",
 		AutoRenewToken: true,
 	})
 	if err != nil {
@@ -47,8 +47,12 @@ func TestAuth_Login(t *testing.T) {
 
 	t.Log("token:", token)
 
-	t.Log("login status:", auth.CheckLogin(id))
-	t.Log("login status:", auth.CheckToken(token))
+	var status bool
+	status, err = auth.CheckLogin(id)
+	t.Log("login status:", status, err)
+
+	status, err = auth.CheckToken(token)
+	t.Log("login status:", status, err)
 }
 
 func TestAuth_Login_Timeout(t *testing.T) {
@@ -72,8 +76,12 @@ func TestAuth_Login_Timeout(t *testing.T) {
 
 	time.Sleep(6 * time.Second)
 
-	t.Log("login status:", auth.CheckLogin(id))
-	t.Log("login status:", auth.CheckToken(token))
+	var status bool
+	status, err = auth.CheckLogin(id)
+	t.Log("login status:", status, err)
+
+	status, err = auth.CheckToken(token)
+	t.Log("login status:", status, err)
 }
 
 func TestAuth_Login_RenewToken(t *testing.T) {
@@ -97,12 +105,18 @@ func TestAuth_Login_RenewToken(t *testing.T) {
 
 	// 休眠 3 秒，续签 token
 	time.Sleep(3 * time.Second)
-	t.Log("login status:", auth.CheckToken(token))
+
+	var status bool
+	status, err = auth.CheckToken(token)
+	t.Log("login status:", status, err)
 
 	// 休眠 3 秒，检查 token 是否过期（没过期）
 	time.Sleep(3 * time.Second)
 	// 休眠 6 秒，检查 token 是否过期（已经过期）
 	// time.Sleep(6 * time.Second)
-	t.Log("login status:", auth.CheckLogin(id))
-	t.Log("login status:", auth.CheckToken(token))
+	status, err = auth.CheckLogin(id)
+	t.Log("login status:", status, err)
+
+	status, err = auth.CheckToken(token)
+	t.Log("login status:", status, err)
 }

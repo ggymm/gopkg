@@ -117,6 +117,7 @@ func CompressZip(dir string, name string) (err error) {
 			return err
 		}
 
+		// 忽略当前目录
 		if relPath == "." {
 			return nil
 		}

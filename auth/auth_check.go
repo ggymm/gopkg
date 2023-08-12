@@ -1,6 +1,6 @@
 package auth
 
-func (a *Auth) CheckLogin(id int64) bool {
+func (a *Auth) CheckLogin(id int64) (bool, error) {
 	var (
 		err     error
 		value   []byte
@@ -10,7 +10,7 @@ func (a *Auth) CheckLogin(id int64) bool {
 	// 1、获取用户 session
 	session, err = a.GetSession(id, false)
 	if err != nil || session == nil {
-		return false
+		return false, err
 	}
 
 	// 2、清理过期的 token
@@ -26,30 +26,30 @@ func (a *Auth) CheckLogin(id int64) bool {
 	_ = session.removeToken(invalid)
 
 	// 3、是有效的 token 数目大于 0，即为登录状态
-	return len(session.TokenList) > 0
+	return len(session.TokenList) > 0, nil
 }
 
-func (a *Auth) CheckToken(token string) bool {
+func (a *Auth) CheckToken(token string) (bool, error) {
 	// 1、获取用户 id
 	var tokenId = a.tokenId(token)
 	value, err := a.store.Get(tokenId)
 	if err != nil || value == nil {
-		return false
+		return false, err
 	}
 	userId, timeout, _ := a.parseTokenValue(value)
 
 	// 2、更新 token 的活跃时间
 	err = a.store.Update(tokenId, a.tokenValue(userId, timeout))
 	if err != nil {
-		return false
+		return false, err
 	}
 
 	// 3、更新 token 的过期时间（续签）
 	if timeout > 0 && a.autoRenewToken {
 		err = a.store.UpdateTimeout(tokenId, timeout)
 		if err != nil {
-			return false
+			return false, err
 		}
 	}
-	return true
+	return true, nil
 }

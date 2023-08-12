@@ -3,6 +3,7 @@ package auth
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/rs/zerolog"
@@ -10,16 +11,6 @@ import (
 	"github.com/ggymm/gopkg/log"
 	"github.com/ggymm/gopkg/utils"
 	"github.com/ggymm/gopkg/utils/cast"
-)
-
-// 日志追踪信息
-const (
-	GetValueError     = "GetValueError"
-	GetExpireError    = "GetExpireError"
-	PutValueError     = "PutValueError"
-	PutExpireError    = "PutExpireError"
-	DeleteValueError  = "DeleteValueError"
-	DeleteExpireError = "DeleteExpireError"
 )
 
 const (
@@ -38,23 +29,25 @@ type Auth struct {
 	shareToken    bool // 是否允许共享 token
 	maxLoginCount int  // 最大登录数（允许并发登陆，非共享 token）
 
-	tokenPrefix    string // token 前缀（like: ninelock-token）
-	autoRenewToken bool   // 是否自动更新 token 的过期时间（续签）
+	tokenName      string        // token 名称（like: ninelock-token）
+	tokenTimeout   time.Duration // token 过期时间（秒）
+	autoRenewToken bool          // 是否自动更新 token 的过期时间（续签）
 }
 
 type Config struct {
 	LogPath string
 
-	Store        storeType
-	RedisConfig  RedisConfig
-	RoseDBConfig RoseDBConfig
+	Store       storeType
+	LocalConfig LocalConfig
+	RedisConfig RedisConfig
 
 	Concurrent    bool // 是否允许并发登录
 	ShareToken    bool // 是否允许共享 token
 	MaxLoginCount int  // 最大登录数（允许并发登陆，非共享 token）
 
-	TokenPrefix    string // token 前缀（like: ninelock-token）
-	AutoRenewToken bool   // 是否自动更新 token 的过期时间（续签）
+	TokenName      string        // token 名称（like: ninelock-token）
+	TokenTimeout   time.Duration // token 过期时间（秒）
+	AutoRenewToken bool          // 是否自动更新 token 的过期时间（续签）
 }
 
 func Init(c Config) (err error) {
@@ -63,7 +56,8 @@ func Init(c Config) (err error) {
 		shareToken:    c.ShareToken,
 		maxLoginCount: c.MaxLoginCount,
 
-		tokenPrefix:    c.TokenPrefix,
+		tokenName:      c.TokenName,
+		tokenTimeout:   c.TokenTimeout,
 		autoRenewToken: c.AutoRenewToken,
 	}
 
@@ -71,10 +65,10 @@ func Init(c Config) (err error) {
 	auth.log = log.InitCustom(c.LogPath)
 
 	switch c.Store {
+	case Local:
+		auth.store, err = newLocal(c.LocalConfig, auth.log)
 	case Redis:
 		auth.store, err = newRedis(c.RedisConfig, auth.log)
-	case RoseDB:
-		auth.store, err = newRoseDB(c.RoseDBConfig, auth.log)
 	}
 	if err != nil {
 		return err
@@ -84,27 +78,27 @@ func Init(c Config) (err error) {
 
 // 生成 sessionId
 func (a *Auth) sessionId(id int64) []byte {
-	return []byte(fmt.Sprintf("%s:session:%d", a.tokenPrefix, id))
+	return []byte(fmt.Sprintf("%s:session:%d", a.tokenName, id))
 }
 
 // 生成 tokenId
 func (a *Auth) tokenId(token string) []byte {
-	return []byte(fmt.Sprintf("%s:token:%s", a.tokenPrefix, token))
+	return []byte(fmt.Sprintf("%s:token:%s", a.tokenName, token))
 }
 
 // 构造 token value
 // value: id,timeout(second),activity time(timestamp)
-func (a *Auth) tokenValue(id, timeout int64) []byte {
+func (a *Auth) tokenValue(id int64, timeout time.Duration) []byte {
 	return []byte(fmt.Sprintf("%d,%d,%d", id, timeout, utils.Now()))
 }
 
 // 解析 token value
-func (a *Auth) parseTokenValue(token []byte) (int64, int64, int64) {
+func (a *Auth) parseTokenValue(token []byte) (int64, time.Duration, int64) {
 	split := strings.Split(string(token), ",")
 	if len(split) < 3 {
 		return 0, 0, 0
 	}
-	return cast.ToInt64(split[0]), cast.ToInt64(split[1]), cast.ToInt64(split[2])
+	return cast.ToInt64(split[0]), time.Duration(cast.ToInt64(split[1])), cast.ToInt64(split[2])
 }
 
 // 创建 token

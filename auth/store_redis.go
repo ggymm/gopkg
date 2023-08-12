@@ -1,6 +1,9 @@
 package auth
 
-import "github.com/rs/zerolog"
+import (
+	"github.com/rs/zerolog"
+	"time"
+)
 
 type RedisStore struct {
 	log zerolog.Logger
@@ -12,7 +15,7 @@ type RedisConfig struct {
 	Database int
 }
 
-func newRedis(c RedisConfig, log zerolog.Logger) (store *RedisStore, err error) {
+func newRedis(config RedisConfig, log zerolog.Logger) (store *RedisStore, err error) {
 	store = &RedisStore{
 		log: log,
 	}
@@ -24,7 +27,7 @@ func (r *RedisStore) Get(key []byte) ([]byte, error) {
 	panic("implement me")
 }
 
-func (r *RedisStore) Put(key []byte, value []byte, timeout int64) error {
+func (r *RedisStore) Put(key []byte, value []byte, timeout time.Duration) error {
 	//TODO implement me
 	panic("implement me")
 }
@@ -39,12 +42,12 @@ func (r *RedisStore) Update(key []byte, value []byte) error {
 	panic("implement me")
 }
 
-func (r *RedisStore) CheckTimeout(key []byte) (int64, error) {
+func (r *RedisStore) CheckTimeout(key []byte) (time.Duration, error) {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (r *RedisStore) UpdateTimeout(key []byte, timeout int64) error {
+func (r *RedisStore) UpdateTimeout(key []byte, timeout time.Duration) error {
 	//TODO implement me
 	panic("implement me")
 }
