@@ -30,13 +30,47 @@ func (a *Auth) GetSession(id int64, create bool) (*Session, error) {
 	return session, nil
 }
 
+func (a *Auth) GetSessionData(token string) (interface{}, error) {
+	var (
+		err     error
+		value   []byte
+		session *Session
+	)
+
+	// 获取 token 对应的 userId
+	value, err = a.store.Get(a.tokenId(token))
+	if err != nil || value == nil {
+		return nil, err
+	}
+	userId, _, _ := a.parseTokenValue(value)
+
+	// 获取 session
+	session, err = a.GetSession(userId, false)
+	if err != nil {
+		return nil, err
+	}
+
+	return session.UserData, nil
+}
+
+func (a *Auth) SetSessionData(id int64, value interface{}) error {
+	// 获取 session
+	session, err := a.GetSession(id, false)
+	if err != nil {
+		return err
+	}
+
+	// 保存 session data
+	return session.setUserData(value)
+}
+
 type Session struct {
-	SessionId      []byte                 // session id
-	UserId         int64                  // 用户 id
-	UserData       map[string]interface{} // 用户自定义数据
-	TokenList      []Token                // token 列表
-	CreateTime     int64                  // 创建时间
-	LastUpdateTime int64                  // 最后更新时间
+	SessionId      []byte      // session id
+	UserId         int64       // 用户 id
+	UserData       interface{} // 用户自定义数据
+	TokenList      []Token     // token 列表
+	CreateTime     int64       // 创建时间
+	LastUpdateTime int64       // 最后更新时间
 }
 
 type Token struct {
@@ -70,6 +104,11 @@ func (s *Session) removeToken(token []string) error {
 			}
 		}
 	}
+	return s.update()
+}
+
+func (s *Session) setUserData(value interface{}) error {
+	s.UserData = value
 	return s.update()
 }
 

@@ -35,6 +35,17 @@ func Check(token string) (bool, error) {
 	return false, nil
 }
 
+func GetSession(id int64) (interface{}, error) {
+	return nil, nil
+}
+
+func SaveSession(id int64, value interface{}) error {
+	if notInit() {
+		return errors.New(ErrAuthNotInit)
+	}
+	return auth.SetSessionData(id, value)
+}
+
 // ------------------------------------------------ fiber web ctx ----------------------------------------------------------------
 
 func WebLogin(id int64, ctx *fiber.Ctx, config ...LoginConfig) (string, error) {
@@ -100,6 +111,28 @@ func WebCheck(ctx *fiber.Ctx) (bool, error) {
 	return auth.CheckToken(token)
 }
 
-func GetWebSession(ctx *fiber.Ctx) {
+func WebGetSession(ctx *fiber.Ctx) (interface{}, error) {
+	if notInit() {
+		return nil, errors.New(ErrAuthNotInit)
+	}
 
+	// 从请求体中获取 token
+	token := ctx.Get(auth.tokenName)
+
+	// 从请求头中获取 token
+	if len(token) == 0 {
+		token = ctx.GetReqHeaders()[auth.tokenName]
+	}
+
+	// 从 cookie 中获取 token
+	if len(token) == 0 {
+		token = ctx.Cookies(auth.tokenName)
+	}
+
+	// 获取 session
+	data, err := auth.GetSessionData(token)
+	if err != nil {
+		return nil, err
+	}
+	return data, nil
 }

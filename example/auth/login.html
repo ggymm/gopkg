@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>登陆页面</title>
+    <style>
+        form {
+            margin: 20px;
+        }
+    </style>
+</head>
+<body>
+<h1>欢迎来到登陆页面</h1>
+<form action="/login" method="post">
+    <label>账号<input name="account" value="admin"></label>
+    <label>密码<input type="password" name="password" value="admin"></label>
+    <button type="submit">测试登陆</button>
+</form>
+
+<form action="/login/web" method="post">
+    <label>账号<input name="account" value="admin"></label>
+    <label>密码<input type="password" name="password" value="admin"></label>
+    <button type="submit">测试登陆（Web）</button>
+</form>
+
+<form action="/login/mobile" method="post">
+    <label>账号<input name="account" value="admin"></label>
+    <label>密码<input type="password" name="password" value="admin"></label>
+    <button type="submit">测试登陆（Mobile）</button>
+</form>
+
+<form action="/login/timeout" method="post">
+    <label>账号<input name="account" value="admin"></label>
+    <label>密码<input type="password" name="password" value="admin"></label>
+    <button type="submit">测试Timeout登陆</button>
+</form>
+
+<form action="/login/session" method="post">
+    <label>账号<input name="account" value="admin"></label>
+    <label>密码<input type="password" name="password" value="admin"></label>
+    <button type="submit">测试Session登陆</button>
+</form>
+</body>
+</html>

@@ -14,6 +14,13 @@ const (
 	NotValueExpire = -2 // NotValueExpire 没有值过期
 )
 
+const (
+	storeGetError    = "store get error"
+	storePutError    = "store put error"
+	storeDeleteError = "store delete error"
+	storeUpdateError = "store update error"
+)
+
 type store interface {
 	Get(key []byte) ([]byte, error)
 	Put(key []byte, value []byte, timeout time.Duration) error

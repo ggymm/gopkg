@@ -11,11 +11,10 @@ type LoginConfig struct {
 	Timeout time.Duration // 超时时间（单位s）
 }
 
-func (a *Auth) Login(id int64, c LoginConfig) (string, error) {
+func (a *Auth) Login(id int64, config LoginConfig) (string, error) {
 	var (
 		err     error
 		token   string
-		tokenId []byte
 		session *Session
 	)
 
@@ -25,25 +24,27 @@ func (a *Auth) Login(id int64, c LoginConfig) (string, error) {
 	}
 
 	// 2、创建 token 和 tokenId
-	token = a.createToken()
-	tokenId = a.tokenId(token)
+	token, err = a.createToken(id, config)
+	if err != nil {
+		return token, err
+	}
 
 	// 3、保存 token 到 session
 	session, err = a.GetSession(id, true)
-	err = session.saveToken(token, c.Device)
+	err = session.saveToken(token, config.Device)
 	if err != nil {
 		return token, err
 	}
 
 	// 4、保存 token -> id,timeout,activity time 的映射关系
-	err = a.store.Put(tokenId, a.tokenValue(id, c.Timeout), c.Timeout)
+	err = a.store.Put(a.tokenId(token), a.tokenValue(id, config.Timeout), config.Timeout)
 	if err != nil {
 		return token, err
 	}
 
 	// 5、更新 token 的过期时间（续签）
-	if c.Timeout > 0 && a.autoRenewToken {
-		err = a.store.UpdateTimeout(tokenId, c.Timeout)
+	if config.Timeout > 0 && a.autoRenewToken {
+		err = a.store.UpdateTimeout(a.tokenId(token), config.Timeout)
 		if err != nil {
 			return token, err
 		}

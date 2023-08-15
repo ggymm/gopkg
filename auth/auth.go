@@ -93,8 +93,9 @@ func (a *Auth) tokenValue(id int64, timeout time.Duration) []byte {
 }
 
 // 解析 token value
-func (a *Auth) parseTokenValue(token []byte) (int64, time.Duration, int64) {
-	split := strings.Split(string(token), ",")
+// id, timeout, activity time
+func (a *Auth) parseTokenValue(value []byte) (int64, time.Duration, int64) {
+	split := strings.Split(string(value), ",")
 	if len(split) < 3 {
 		return 0, 0, 0
 	}
@@ -102,21 +103,51 @@ func (a *Auth) parseTokenValue(token []byte) (int64, time.Duration, int64) {
 }
 
 // 创建 token
-func (a *Auth) createToken() string {
+func (a *Auth) createToken(id int64, config LoginConfig) (string, error) {
 	// 判断是否允许重复登录
+	// 如果不允许重复登陆，需要踢出其他 token 的登陆状态（同device）
 	if !a.concurrent {
-		// TODO
-		// 需要将其他账号的登陆状态设置为无效
+		// 需要将其他 token 的登陆状态设置为无效
+		session, err := a.GetSession(id, false)
+		if err != nil {
+			return "", nil
+		}
+
+		if session != nil {
+			for _, token := range session.TokenList {
+				if token.Device == config.Device {
+					// 将其他 token 踢出登陆
+					err = a.store.Delete(a.tokenId(token.Value))
+					if err != nil {
+						return "", err
+					}
+					err = session.removeToken([]string{token.Value})
+					if err != nil {
+						return "", err
+					}
+				}
+			}
+		}
 	} else {
 		// 在允许重复登录的情况下
 		// 需要判断是否允许共享 token
 		if a.shareToken {
-			// TODO
 			// 查询是否有可用的 token
+			session, err := a.GetSession(id, false)
+			if err != nil {
+				return "", nil
+			}
+
 			// 如果查询到可用的 token。直接返回
+			if session != nil {
+				tokenList := session.selectToken(config.Device)
+				if len(tokenList) > 0 {
+					return tokenList[0], nil
+				}
+			}
 		}
 	}
 
 	// 生成新的 token
-	return uuid.New().String()
+	return uuid.New().String(), nil
 }
