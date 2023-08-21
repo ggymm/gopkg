@@ -19,20 +19,7 @@ const (
 	InvalidLoginId = "invalid login id"
 )
 
-var auth *Auth
-
-type Auth struct {
-	log   zerolog.Logger
-	store store
-
-	concurrent    bool // 是否允许并发登录
-	shareToken    bool // 是否允许共享 token
-	maxLoginCount int  // 最大登录数（允许并发登陆，非共享 token）
-
-	tokenName      string        // token 名称（like: ninelock-token）
-	tokenTimeout   time.Duration // token 过期时间（秒）
-	autoRenewToken bool          // 是否自动更新 token 的过期时间（续签）
-}
+var Auth *Service
 
 type Config struct {
 	LogPath string
@@ -50,8 +37,21 @@ type Config struct {
 	AutoRenewToken bool          // 是否自动更新 token 的过期时间（续签）
 }
 
+type Service struct {
+	log   zerolog.Logger
+	store store
+
+	concurrent    bool // 是否允许并发登录
+	shareToken    bool // 是否允许共享 token
+	maxLoginCount int  // 最大登录数（允许并发登陆，非共享 token）
+
+	tokenName      string        // token 名称（like: ninelock-token）
+	tokenTimeout   time.Duration // token 过期时间（秒）
+	autoRenewToken bool          // 是否自动更新 token 的过期时间（续签）
+}
+
 func Init(c Config) (err error) {
-	auth = &Auth{
+	Auth = &Service{
 		concurrent:    c.Concurrent,
 		shareToken:    c.ShareToken,
 		maxLoginCount: c.MaxLoginCount,
@@ -62,13 +62,13 @@ func Init(c Config) (err error) {
 	}
 
 	// 初始化日志
-	auth.log = log.InitCustom(c.LogPath)
+	Auth.log = log.InitCustom(c.LogPath)
 
 	switch c.Store {
 	case Local:
-		auth.store, err = newLocal(c.LocalConfig, auth.log)
+		Auth.store, err = newLocal(c.LocalConfig, Auth.log)
 	case Redis:
-		auth.store, err = newRedis(c.RedisConfig, auth.log)
+		Auth.store, err = newRedis(c.RedisConfig, Auth.log)
 	}
 	if err != nil {
 		return err
@@ -76,25 +76,35 @@ func Init(c Config) (err error) {
 	return nil
 }
 
+// GetTokenName 获取 token 名称
+func (s *Service) GetTokenName() string {
+	return s.tokenName
+}
+
+// GetDefaultTimeout 获取默认的超时时间
+func (s *Service) GetDefaultTimeout() time.Duration {
+	return s.tokenTimeout
+}
+
 // 生成 sessionId
-func (a *Auth) sessionId(id int64) []byte {
-	return []byte(fmt.Sprintf("%s:session:%d", a.tokenName, id))
+func (s *Service) sessionId(id int64) []byte {
+	return []byte(fmt.Sprintf("%s:session:%d", s.tokenName, id))
 }
 
 // 生成 tokenId
-func (a *Auth) tokenId(token string) []byte {
-	return []byte(fmt.Sprintf("%s:token:%s", a.tokenName, token))
+func (s *Service) tokenId(token string) []byte {
+	return []byte(fmt.Sprintf("%s:token:%s", s.tokenName, token))
 }
 
 // 构造 token value
 // value: id,timeout(second),activity time(timestamp)
-func (a *Auth) tokenValue(id int64, timeout time.Duration) []byte {
+func (s *Service) tokenValue(id int64, timeout time.Duration) []byte {
 	return []byte(fmt.Sprintf("%d,%d,%d", id, timeout, utils.Now()))
 }
 
 // 解析 token value
 // id, timeout, activity time
-func (a *Auth) parseTokenValue(value []byte) (int64, time.Duration, int64) {
+func (s *Service) parseTokenValue(value []byte) (int64, time.Duration, int64) {
 	split := strings.Split(string(value), ",")
 	if len(split) < 3 {
 		return 0, 0, 0
@@ -103,12 +113,12 @@ func (a *Auth) parseTokenValue(value []byte) (int64, time.Duration, int64) {
 }
 
 // 创建 token
-func (a *Auth) createToken(id int64, config LoginConfig) (string, error) {
+func (s *Service) createToken(id int64, config LoginConfig) (string, error) {
 	// 判断是否允许重复登录
 	// 如果不允许重复登陆，需要踢出其他 token 的登陆状态（同device）
-	if !a.concurrent {
+	if !s.concurrent {
 		// 需要将其他 token 的登陆状态设置为无效
-		session, err := a.GetSession(id, false)
+		session, err := s.GetSession(id, false)
 		if err != nil {
 			return "", nil
 		}
@@ -117,7 +127,7 @@ func (a *Auth) createToken(id int64, config LoginConfig) (string, error) {
 			for _, token := range session.TokenList {
 				if token.Device == config.Device {
 					// 将其他 token 踢出登陆
-					err = a.store.Delete(a.tokenId(token.Value))
+					err = s.store.Delete(s.tokenId(token.Value))
 					if err != nil {
 						return "", err
 					}
@@ -131,9 +141,9 @@ func (a *Auth) createToken(id int64, config LoginConfig) (string, error) {
 	} else {
 		// 在允许重复登录的情况下
 		// 需要判断是否允许共享 token
-		if a.shareToken {
+		if s.shareToken {
 			// 查询是否有可用的 token
-			session, err := a.GetSession(id, false)
+			session, err := s.GetSession(id, false)
 			if err != nil {
 				return "", nil
 			}

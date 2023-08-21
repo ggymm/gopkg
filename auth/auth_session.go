@@ -4,15 +4,15 @@ import (
 	"github.com/ggymm/gopkg/utils"
 )
 
-func (a *Auth) GetSession(id int64, create bool) (*Session, error) {
+func (s *Service) GetSession(id int64, create bool) (*Session, error) {
 	var (
 		err       error
 		sess      []byte
 		session   *Session
-		sessionId = a.sessionId(id)
+		sessionId = s.sessionId(id)
 	)
 
-	sess, err = a.store.Get(sessionId)
+	sess, err = s.store.Get(sessionId)
 	if err != nil {
 		return nil, err
 	}
@@ -30,7 +30,7 @@ func (a *Auth) GetSession(id int64, create bool) (*Session, error) {
 	return session, nil
 }
 
-func (a *Auth) GetSessionData(token string) (interface{}, error) {
+func (s *Service) GetSessionData(token string) (interface{}, error) {
 	var (
 		err     error
 		value   []byte
@@ -38,14 +38,14 @@ func (a *Auth) GetSessionData(token string) (interface{}, error) {
 	)
 
 	// 获取 token 对应的 userId
-	value, err = a.store.Get(a.tokenId(token))
+	value, err = s.store.Get(s.tokenId(token))
 	if err != nil || value == nil {
 		return nil, err
 	}
-	userId, _, _ := a.parseTokenValue(value)
+	userId, _, _ := s.parseTokenValue(value)
 
 	// 获取 session
-	session, err = a.GetSession(userId, false)
+	session, err = s.GetSession(userId, false)
 	if err != nil {
 		return nil, err
 	}
@@ -53,9 +53,9 @@ func (a *Auth) GetSessionData(token string) (interface{}, error) {
 	return session.UserData, nil
 }
 
-func (a *Auth) SetSessionData(id int64, value interface{}) error {
+func (s *Service) SetSessionData(id int64, value interface{}) error {
 	// 获取 session
-	session, err := a.GetSession(id, false)
+	session, err := s.GetSession(id, false)
 	if err != nil {
 		return err
 	}
@@ -81,7 +81,7 @@ type Token struct {
 // 更新 session
 func (s *Session) update() error {
 	s.LastUpdateTime = utils.Now()
-	return auth.store.Put(s.SessionId, utils.JsonEncode(s), NeverExpire)
+	return Auth.store.Put(s.SessionId, utils.JsonEncode(s), NeverExpire)
 }
 
 func (s *Session) saveToken(token, device string) error {

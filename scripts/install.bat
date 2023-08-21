@@ -1,1 +1,1 @@
-go get github.com/ggymm/gopkg@v1.0.4
+go get github.com/ggymm/gopkg@v1.0.5

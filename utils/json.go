@@ -2,41 +2,54 @@ package utils
 
 import (
 	"github.com/goccy/go-json"
-
-	"github.com/ggymm/gopkg/constant"
-	"github.com/ggymm/gopkg/log"
 )
 
 func JsonEncode(data interface{}) []byte {
-	str, err := json.Marshal(data)
-	if err != nil {
-		log.Error().Err(err).Msg(constant.JsonEncodeError)
-		return nil
-	}
+	str, _ := JsonEncodeE(data)
 	return str
 }
 
-func JsonEncodes(data interface{}) string {
+func JsonEncodeE(data interface{}) ([]byte, error) {
 	str, err := json.Marshal(data)
 	if err != nil {
-		log.Error().Err(err).Msg(constant.JsonEncodeError)
-		return ""
+		return nil, err
 	}
-	return string(str)
+	return str, nil
+}
+
+func JsonEncodes(data interface{}) string {
+	str, _ := JsonEncodesE(data)
+	return str
+}
+
+func JsonEncodesE(data interface{}) (string, error) {
+	str, err := json.Marshal(data)
+	if err != nil {
+		return "", err
+	}
+	return string(str), nil
 }
 
 func JsonDecode(data string, v interface{}) {
+	_ = JsonDecodeE(data, &v)
+}
+
+func JsonDecodeE(data string, v interface{}) error {
 	err := json.Unmarshal([]byte(data), &v)
 	if err != nil {
-		log.Error().Err(err).Msg(constant.JsonDecodeError)
-		return
+		return err
 	}
+	return nil
 }
 
 func JsonDecodes(data []byte, v interface{}) {
+	_ = JsonDecodesE(data, &v)
+}
+
+func JsonDecodesE(data []byte, v interface{}) error {
 	err := json.Unmarshal(data, &v)
 	if err != nil {
-		log.Error().Err(err).Msg(constant.JsonDecodeError)
-		return
+		return err
 	}
+	return nil
 }

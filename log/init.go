@@ -10,23 +10,12 @@ import (
 	"gopkg.in/natefinch/lumberjack.v2"
 )
 
-var logger zerolog.Logger
-
-func Init(filename string) {
+func InitCustom(filename ...string) zerolog.Logger {
 	writers := io.MultiWriter(console())
 	if len(filename) > 0 {
-		writers = io.MultiWriter(writers, rollingFile(filename))
-	}
-
-	zerolog.TimeFieldFormat = time.DateTime
-	zerolog.ErrorStackMarshaler = pkgerrors.MarshalStack
-	logger = zerolog.New(writers).With().Caller().Timestamp().Logger()
-}
-
-func InitCustom(filename string) zerolog.Logger {
-	writers := io.MultiWriter(console())
-	if len(filename) > 0 {
-		writers = io.MultiWriter(writers, rollingFile(filename))
+		if len(filename[0]) > 0 {
+			writers = io.MultiWriter(writers, rollingFile(filename[0]))
+		}
 	}
 
 	zerolog.TimeFieldFormat = time.DateTime
