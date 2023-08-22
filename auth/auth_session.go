@@ -53,7 +53,7 @@ func (a *Auth) GetSessionData(token string) (interface{}, error) {
 	return session.UserData, nil
 }
 
-func (a *Auth) SetSessionData(id int64, value interface{}) error {
+func (a *Auth) SaveSessionData(id int64, value interface{}) error {
 	// 获取 session
 	session, err := a.GetSession(id, false)
 	if err != nil {

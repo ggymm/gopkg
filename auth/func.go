@@ -9,17 +9,13 @@ func NotInit() bool {
 	return auth == nil
 }
 
+// GetTokenName 获取 token 的名称
 func GetTokenName() string {
-	if NotInit() {
-		return ""
-	}
 	return auth.tokenName
 }
 
+// GetDefaultTimeout 获取 token 的默认过期时间
 func GetDefaultTimeout() time.Duration {
-	if NotInit() {
-		return 0
-	}
 	return auth.tokenTimeout
 }
 
@@ -44,20 +40,16 @@ func Check(token string) (bool, error) {
 	return auth.CheckToken(token)
 }
 
-func GetSession(id int64) (interface{}, error) {
-	return nil, nil
+func GetSession(token string) (interface{}, error) {
+	if NotInit() {
+		return nil, errors.New(ErrAuthNotInit)
+	}
+	return auth.GetSessionData(token)
 }
 
 func SaveSession(id int64, value interface{}) error {
 	if NotInit() {
 		return errors.New(ErrAuthNotInit)
 	}
-	return auth.SetSessionData(id, value)
-}
-
-func GetSessionData(token string) (interface{}, error) {
-	if NotInit() {
-		return nil, errors.New(ErrAuthNotInit)
-	}
-	return auth.GetSessionData(token)
+	return auth.SaveSessionData(id, value)
 }
