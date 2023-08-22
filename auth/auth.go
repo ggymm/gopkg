@@ -19,7 +19,7 @@ const (
 	InvalidLoginId = "invalid login id"
 )
 
-var Auth *Service
+var auth *Auth
 
 type Config struct {
 	LogPath string
@@ -37,7 +37,7 @@ type Config struct {
 	AutoRenewToken bool          // 是否自动更新 token 的过期时间（续签）
 }
 
-type Service struct {
+type Auth struct {
 	log   zerolog.Logger
 	store store
 
@@ -51,7 +51,7 @@ type Service struct {
 }
 
 func Init(c Config) (err error) {
-	Auth = &Service{
+	auth = &Auth{
 		concurrent:    c.Concurrent,
 		shareToken:    c.ShareToken,
 		maxLoginCount: c.MaxLoginCount,
@@ -62,13 +62,13 @@ func Init(c Config) (err error) {
 	}
 
 	// 初始化日志
-	Auth.log = log.InitCustom(c.LogPath)
+	auth.log = log.InitCustom(c.LogPath)
 
 	switch c.Store {
 	case Local:
-		Auth.store, err = newLocal(c.LocalConfig, Auth.log)
+		auth.store, err = newLocal(c.LocalConfig, auth.log)
 	case Redis:
-		Auth.store, err = newRedis(c.RedisConfig, Auth.log)
+		auth.store, err = newRedis(c.RedisConfig, auth.log)
 	}
 	if err != nil {
 		return err
@@ -76,35 +76,25 @@ func Init(c Config) (err error) {
 	return nil
 }
 
-// GetTokenName 获取 token 名称
-func (s *Service) GetTokenName() string {
-	return s.tokenName
-}
-
-// GetDefaultTimeout 获取默认的超时时间
-func (s *Service) GetDefaultTimeout() time.Duration {
-	return s.tokenTimeout
-}
-
 // 生成 sessionId
-func (s *Service) sessionId(id int64) []byte {
-	return []byte(fmt.Sprintf("%s:session:%d", s.tokenName, id))
+func (a *Auth) sessionId(id int64) []byte {
+	return []byte(fmt.Sprintf("%s:session:%d", a.tokenName, id))
 }
 
 // 生成 tokenId
-func (s *Service) tokenId(token string) []byte {
-	return []byte(fmt.Sprintf("%s:token:%s", s.tokenName, token))
+func (a *Auth) tokenId(token string) []byte {
+	return []byte(fmt.Sprintf("%s:token:%s", a.tokenName, token))
 }
 
 // 构造 token value
 // value: id,timeout(second),activity time(timestamp)
-func (s *Service) tokenValue(id int64, timeout time.Duration) []byte {
+func (a *Auth) tokenValue(id int64, timeout time.Duration) []byte {
 	return []byte(fmt.Sprintf("%d,%d,%d", id, timeout, utils.Now()))
 }
 
 // 解析 token value
 // id, timeout, activity time
-func (s *Service) parseTokenValue(value []byte) (int64, time.Duration, int64) {
+func (a *Auth) parseTokenValue(value []byte) (int64, time.Duration, int64) {
 	split := strings.Split(string(value), ",")
 	if len(split) < 3 {
 		return 0, 0, 0
@@ -113,12 +103,12 @@ func (s *Service) parseTokenValue(value []byte) (int64, time.Duration, int64) {
 }
 
 // 创建 token
-func (s *Service) createToken(id int64, config LoginConfig) (string, error) {
+func (a *Auth) createToken(id int64, config LoginConfig) (string, error) {
 	// 判断是否允许重复登录
 	// 如果不允许重复登陆，需要踢出其他 token 的登陆状态（同device）
-	if !s.concurrent {
+	if !a.concurrent {
 		// 需要将其他 token 的登陆状态设置为无效
-		session, err := s.GetSession(id, false)
+		session, err := a.GetSession(id, false)
 		if err != nil {
 			return "", nil
 		}
@@ -127,7 +117,7 @@ func (s *Service) createToken(id int64, config LoginConfig) (string, error) {
 			for _, token := range session.TokenList {
 				if token.Device == config.Device {
 					// 将其他 token 踢出登陆
-					err = s.store.Delete(s.tokenId(token.Value))
+					err = a.store.Delete(a.tokenId(token.Value))
 					if err != nil {
 						return "", err
 					}
@@ -141,9 +131,9 @@ func (s *Service) createToken(id int64, config LoginConfig) (string, error) {
 	} else {
 		// 在允许重复登录的情况下
 		// 需要判断是否允许共享 token
-		if s.shareToken {
+		if a.shareToken {
 			// 查询是否有可用的 token
-			session, err := s.GetSession(id, false)
+			session, err := a.GetSession(id, false)
 			if err != nil {
 				return "", nil
 			}

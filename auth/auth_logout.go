@@ -1,6 +1,6 @@
 package auth
 
-func (s *Service) Logout(id int64, device ...string) error {
+func (a *Auth) Logout(id int64, device ...string) error {
 	var (
 		err       error
 		session   *Session
@@ -8,7 +8,7 @@ func (s *Service) Logout(id int64, device ...string) error {
 	)
 
 	// 1、获取 session
-	session, err = s.GetSession(id, false)
+	session, err = a.GetSession(id, false)
 	if err != nil {
 		return err
 	}
@@ -24,7 +24,7 @@ func (s *Service) Logout(id int64, device ...string) error {
 
 	// 4、移除 token -> id 的映射关系
 	for _, token := range tokenList {
-		err = s.store.Delete(s.tokenId(token))
+		err = a.store.Delete(a.tokenId(token))
 		if err != nil {
 			return err
 		}
@@ -32,7 +32,7 @@ func (s *Service) Logout(id int64, device ...string) error {
 
 	// 5、判断是否需要删除 session
 	if len(session.TokenList) == 0 {
-		err = s.store.Delete(session.SessionId) // sessionId == s.sessionId(id)
+		err = a.store.Delete(session.SessionId) // sessionId == s.sessionId(id)
 		if err != nil {
 			return err
 		}
@@ -40,7 +40,7 @@ func (s *Service) Logout(id int64, device ...string) error {
 	return nil
 }
 
-func (s *Service) LogoutByToken(token string) (err error) {
+func (a *Auth) LogoutByToken(token string) (err error) {
 	var (
 		value   []byte
 		userId  int64
@@ -48,24 +48,24 @@ func (s *Service) LogoutByToken(token string) (err error) {
 	)
 
 	// 1、获取 token 信息
-	tokenId := s.tokenId(token)
-	value, err = s.store.Get(tokenId)
+	tokenId := a.tokenId(token)
+	value, err = a.store.Get(tokenId)
 	if err != nil {
 		return err
 	}
 	if value == nil {
 		return nil
 	}
-	userId, _, _ = s.parseTokenValue(value)
+	userId, _, _ = a.parseTokenValue(value)
 
 	// 2、移除 token -> id 的映射关系
-	err = s.store.Delete(tokenId)
+	err = a.store.Delete(tokenId)
 	if err != nil {
 		return err
 	}
 
 	// 3、清理 session 中的 token
-	session, err = s.GetSession(userId, false)
+	session, err = a.GetSession(userId, false)
 	if err != nil {
 		return err
 	}
@@ -76,7 +76,7 @@ func (s *Service) LogoutByToken(token string) (err error) {
 
 	// 4、判断是否需要删除 session
 	if len(session.TokenList) == 0 {
-		err = s.store.Delete(session.SessionId) // sessionId == s.sessionId(id)
+		err = a.store.Delete(session.SessionId) // sessionId == s.sessionId(id)
 		if err != nil {
 			return err
 		}
