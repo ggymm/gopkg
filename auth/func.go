@@ -19,6 +19,7 @@ func GetDefaultTimeout() time.Duration {
 	return auth.tokenTimeout
 }
 
+// Login 登录
 func Login(id int64, config ...LoginConfig) (string, error) {
 	if NotInit() {
 		return "", errors.New(ErrAuthNotInit)
@@ -33,6 +34,14 @@ func Login(id int64, config ...LoginConfig) (string, error) {
 	return auth.Login(id, cfg)
 }
 
+func Logout(id int64, device ...string) error {
+	if NotInit() {
+		return errors.New(ErrAuthNotInit)
+	}
+	return auth.Logout(id, device...)
+}
+
+// Check 检查 token 是否有效
 func Check(token string) (bool, error) {
 	if NotInit() {
 		return false, errors.New(ErrAuthNotInit)
@@ -40,14 +49,14 @@ func Check(token string) (bool, error) {
 	return auth.CheckToken(token)
 }
 
-func GetSession(token string) (interface{}, error) {
+func GetSession(token string) (any, error) {
 	if NotInit() {
 		return nil, errors.New(ErrAuthNotInit)
 	}
 	return auth.GetSessionData(token)
 }
 
-func SaveSession(id int64, value interface{}) error {
+func SaveSession(id int64, value any) error {
 	if NotInit() {
 		return errors.New(ErrAuthNotInit)
 	}

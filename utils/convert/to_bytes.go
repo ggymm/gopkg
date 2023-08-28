@@ -1,4 +1,4 @@
-package cast
+package convert
 
 import (
 	"encoding/binary"
@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-func ToBytes(value interface{}) []byte {
+func ToBytes(value any) []byte {
 	var b []byte
 	switch v := value.(type) {
 	case string:

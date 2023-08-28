@@ -30,7 +30,7 @@ func (a *Auth) GetSession(id int64, create bool) (*Session, error) {
 	return session, nil
 }
 
-func (a *Auth) GetSessionData(token string) (interface{}, error) {
+func (a *Auth) GetSessionData(token string) (any, error) {
 	var (
 		err     error
 		value   []byte
@@ -53,7 +53,7 @@ func (a *Auth) GetSessionData(token string) (interface{}, error) {
 	return session.UserData, nil
 }
 
-func (a *Auth) SaveSessionData(id int64, value interface{}) error {
+func (a *Auth) SaveSessionData(id int64, value any) error {
 	// 获取 session
 	session, err := a.GetSession(id, false)
 	if err != nil {
@@ -65,12 +65,12 @@ func (a *Auth) SaveSessionData(id int64, value interface{}) error {
 }
 
 type Session struct {
-	SessionId      []byte      // session id
-	UserId         int64       // 用户 id
-	UserData       interface{} // 用户自定义数据
-	TokenList      []Token     // token 列表
-	CreateTime     int64       // 创建时间
-	LastUpdateTime int64       // 最后更新时间
+	SessionId      []byte  // session id
+	UserId         int64   // 用户 id
+	UserData       any     // 用户自定义数据
+	TokenList      []Token // token 列表
+	CreateTime     int64   // 创建时间
+	LastUpdateTime int64   // 最后更新时间
 }
 
 type Token struct {
@@ -107,7 +107,7 @@ func (s *Session) removeToken(token []string) error {
 	return s.update()
 }
 
-func (s *Session) setUserData(value interface{}) error {
+func (s *Session) setUserData(value any) error {
 	s.UserData = value
 	return s.update()
 }

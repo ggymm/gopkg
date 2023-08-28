@@ -1,23 +1,64 @@
 package utils
 
-import "testing"
+import (
+	"os"
+	"testing"
+)
 
 func TestMkdir(t *testing.T) {
-	type args struct {
-		dir string
+	err := Mkdir("D:\\temp\\test")
+	if err != nil {
+		t.Errorf("Mkdir() error = %v", err)
+		return
 	}
-	tests := []struct {
-		name    string
-		args    args
-		wantErr bool
-	}{
-		{name: "test1", args: args{dir: "test1"}, wantErr: false},
+	t.Log("success")
+	_ = os.RemoveAll("D:\\temp\\test")
+}
+
+func TestReadFileByLine(t *testing.T) {
+	content, err := ReadFileByLine("file_test.go")
+	if err != nil {
+		t.Errorf("ReadFileByLine() error = %v", err)
+		return
 	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if err := Mkdir(tt.args.dir); (err != nil) != tt.wantErr {
-				t.Errorf("Mkdir() error = %v, wantErr %v", err, tt.wantErr)
-			}
-		})
+	t.Log(content)
+}
+
+func TestReadFileToString(t *testing.T) {
+	content, err := ReadFileToString("file_test.go")
+	if err != nil {
+		t.Errorf("ReadFileToString() error = %v", err)
+		return
 	}
+	t.Log(content)
+}
+
+func TestWriteBytesToFile(t *testing.T) {
+	err := WriteBytesToFile("D:\\temp\\test\\test.txt", []byte{1, 2}, false)
+	if err != nil {
+		t.Errorf("WriteBytesToFile() error = %v", err)
+		return
+	}
+	t.Log("success")
+}
+
+func TestWriteStringToFile(t *testing.T) {
+	err := WriteStringToFile("D:\\temp\\test\\test.txt", "hello", false)
+	if err != nil {
+		t.Errorf("WriteStringToFile() error = %v", err)
+		return
+	}
+	t.Log("success")
+
+	// 测试重复写入是否会丢弃之前的内容
+	err = WriteStringToFile("D:\\temp\\test\\test.txt", "ll", false)
+	if err != nil {
+		t.Errorf("WriteStringToFile() error = %v", err)
+		return
+	}
+	t.Log("success")
+}
+
+func TestCurrentPath(t *testing.T) {
+	t.Log(CurrentPath())
 }

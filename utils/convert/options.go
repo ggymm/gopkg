@@ -1,4 +1,4 @@
-package cast
+package convert
 
 type NilCastRule = int
 
@@ -10,9 +10,9 @@ const (
 type ValueCastRule int
 
 const (
-	ValueToZero      ValueCastRule = iota // 直接返回错误
-	ValueToError                          // 转换为对应类型的零值
-	ValueToForceCast                      // 做一个强制类型转换
+	ValueToZero  ValueCastRule = iota // 直接返回错误
+	ValueToError                      // 转换为对应类型的零值
+	// ValueToForceCast                      // 做一个强制类型转换
 )
 
 type Options struct {

@@ -1,11 +1,11 @@
-package cast
+package convert
 
 import (
 	"strconv"
 	"time"
 )
 
-func ToString(value interface{}) string {
+func ToString(value any) string {
 	if value == nil {
 		return ""
 	}

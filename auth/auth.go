@@ -10,7 +10,7 @@ import (
 
 	"github.com/ggymm/gopkg/log"
 	"github.com/ggymm/gopkg/utils"
-	"github.com/ggymm/gopkg/utils/cast"
+	"github.com/ggymm/gopkg/utils/convert"
 )
 
 const (
@@ -99,7 +99,7 @@ func (a *Auth) parseTokenValue(value []byte) (int64, time.Duration, int64) {
 	if len(split) < 3 {
 		return 0, 0, 0
 	}
-	return cast.ToInt64(split[0]), time.Duration(cast.ToInt64(split[1])), cast.ToInt64(split[2])
+	return convert.ToInt64(split[0]), time.Duration(convert.ToInt64(split[1])), convert.ToInt64(split[2])
 }
 
 // 创建 token

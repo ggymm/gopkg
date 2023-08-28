@@ -1,4 +1,4 @@
-package cast
+package convert
 
 import (
 	"encoding/binary"

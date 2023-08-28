@@ -4,12 +4,12 @@ import (
 	"github.com/goccy/go-json"
 )
 
-func JsonEncode(data interface{}) []byte {
+func JsonEncode(data any) []byte {
 	str, _ := JsonEncodeE(data)
 	return str
 }
 
-func JsonEncodeE(data interface{}) ([]byte, error) {
+func JsonEncodeE(data any) ([]byte, error) {
 	str, err := json.Marshal(data)
 	if err != nil {
 		return nil, err
@@ -17,12 +17,12 @@ func JsonEncodeE(data interface{}) ([]byte, error) {
 	return str, nil
 }
 
-func JsonEncodes(data interface{}) string {
+func JsonEncodes(data any) string {
 	str, _ := JsonEncodesE(data)
 	return str
 }
 
-func JsonEncodesE(data interface{}) (string, error) {
+func JsonEncodesE(data any) (string, error) {
 	str, err := json.Marshal(data)
 	if err != nil {
 		return "", err
@@ -30,11 +30,11 @@ func JsonEncodesE(data interface{}) (string, error) {
 	return string(str), nil
 }
 
-func JsonDecode(data string, v interface{}) {
+func JsonDecode(data string, v any) {
 	_ = JsonDecodeE(data, &v)
 }
 
-func JsonDecodeE(data string, v interface{}) error {
+func JsonDecodeE(data string, v any) error {
 	err := json.Unmarshal([]byte(data), &v)
 	if err != nil {
 		return err
@@ -42,11 +42,11 @@ func JsonDecodeE(data string, v interface{}) error {
 	return nil
 }
 
-func JsonDecodes(data []byte, v interface{}) {
+func JsonDecodes(data []byte, v any) {
 	_ = JsonDecodesE(data, &v)
 }
 
-func JsonDecodesE(data []byte, v interface{}) error {
+func JsonDecodesE(data []byte, v any) error {
 	err := json.Unmarshal(data, &v)
 	if err != nil {
 		return err
