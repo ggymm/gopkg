@@ -5,13 +5,15 @@ go 1.21
 require (
 	github.com/goccy/go-json v0.10.2
 	github.com/google/uuid v1.3.1
-	github.com/nutsdb/nutsdb v0.13.1
+	github.com/nutsdb/nutsdb v0.14.0
 	github.com/pkg/errors v0.9.1
 	github.com/rs/zerolog v1.30.0
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1
 )
 
 require (
+	github.com/antlabs/stl v0.0.1 // indirect
+	github.com/antlabs/timer v0.0.11 // indirect
 	github.com/bwmarrin/snowflake v0.3.0 // indirect
 	github.com/emirpasic/gods v1.18.1 // indirect
 	github.com/gofrs/flock v0.8.1 // indirect
