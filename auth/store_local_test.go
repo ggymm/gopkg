@@ -1,15 +1,16 @@
 package auth
 
 import (
-	"github.com/ggymm/gopkg/log"
 	"testing"
 	"time"
+
+	"github.com/ggymm/gopkg/logger"
 )
 
 func newLocalStore() *LocalStore {
 	s, err := newLocal(LocalConfig{
 		Dir: "C:/Product/gopkg/temp/auth/storage",
-	}, log.InitCustom("C:/Product/gopkg/temp/auth/auth.log"))
+	}, logger.InitCustom("C:/Product/gopkg/temp/auth/auth.log"))
 	if err != nil {
 		panic(err)
 		return nil

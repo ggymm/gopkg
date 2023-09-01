@@ -1,9 +1,14 @@
 package utils
 
 import (
+	"mime/multipart"
 	"os"
 	"testing"
 )
+
+func TestCurrentPath(t *testing.T) {
+	t.Log(CurrentPath())
+}
 
 func TestMkdir(t *testing.T) {
 	err := Mkdir("D:\\temp\\test")
@@ -16,9 +21,9 @@ func TestMkdir(t *testing.T) {
 }
 
 func TestReadFileByLine(t *testing.T) {
-	content, err := ReadFileByLine("file_test.go")
+	content, err := ReadFileToLines("file_test.go")
 	if err != nil {
-		t.Errorf("ReadFileByLine() error = %v", err)
+		t.Errorf("ReadFileToLines() error = %v", err)
 		return
 	}
 	t.Log(content)
@@ -28,6 +33,20 @@ func TestReadFileToString(t *testing.T) {
 	content, err := ReadFileToString("file_test.go")
 	if err != nil {
 		t.Errorf("ReadFileToString() error = %v", err)
+		return
+	}
+	t.Log(content)
+}
+
+func TestReadMultipartFileToBytes(t *testing.T) {
+	// 创建 multipart.FileHeader
+	fh := &multipart.FileHeader{
+		Filename: "file_test.go",
+		// TODO: 构建 multipart.FileHeader
+	}
+	content, err := ReadMultipartFileToBytes(fh)
+	if err != nil {
+		t.Errorf("ReadMultipartFileToBytes() error = %v", err)
 		return
 	}
 	t.Log(content)
@@ -57,8 +76,4 @@ func TestWriteStringToFile(t *testing.T) {
 		return
 	}
 	t.Log("success")
-}
-
-func TestCurrentPath(t *testing.T) {
-	t.Log(CurrentPath())
 }

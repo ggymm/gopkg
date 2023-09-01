@@ -3,11 +3,22 @@ package utils
 import (
 	"bufio"
 	"io"
+	"mime/multipart"
 	"os"
 	"path"
 	"path/filepath"
 	"runtime"
 )
+
+func CurrentPath() string {
+	var absPath string
+	_, filename, _, ok := runtime.Caller(1)
+	if ok {
+		absPath = path.Dir(filename)
+	}
+
+	return absPath
+}
 
 // Mkdir create dir if not exists
 func Mkdir(dir string) (err error) {
@@ -20,7 +31,9 @@ func Mkdir(dir string) (err error) {
 	return nil
 }
 
-func ReadFileByLine(path string) ([]string, error) {
+// ReadFileToLines
+// 读取文件内容，按行返回
+func ReadFileToLines(path string) ([]string, error) {
 	f, err := os.Open(path)
 	if err != nil {
 		return nil, err
@@ -45,12 +58,42 @@ func ReadFileByLine(path string) ([]string, error) {
 	return lines, nil
 }
 
+// ReadFileToString
+// 读取文件内容，返回字符串
 func ReadFileToString(path string) (string, error) {
 	file, err := os.ReadFile(path)
 	if err != nil {
 		return "", err
 	}
 	return string(file), nil
+}
+
+// ReadMultipartFileToBytes
+// 读取 multipart.FileHeader 文件内容，返回 []byte
+func ReadMultipartFileToBytes(fh *multipart.FileHeader) ([]byte, error) {
+	var (
+		err     error
+		file    multipart.File
+		content []byte
+	)
+
+	// 打开文件
+	file, err = fh.Open()
+	if err != nil {
+		return nil, err
+	}
+	content, err = io.ReadAll(file)
+	if err != nil {
+		return nil, err
+	}
+	defer func() {
+		e := file.Close()
+		if err == nil {
+			err = e
+		}
+	}()
+
+	return content, err
 }
 
 // WriteBytesToFile write bytes to file
@@ -115,14 +158,4 @@ func WriteStringToFile(path string, content string, append bool) error {
 		return err
 	}
 	return f.Close()
-}
-
-func CurrentPath() string {
-	var absPath string
-	_, filename, _, ok := runtime.Caller(1)
-	if ok {
-		absPath = path.Dir(filename)
-	}
-
-	return absPath
 }

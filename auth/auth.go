@@ -8,9 +8,9 @@ import (
 	"github.com/google/uuid"
 	"github.com/rs/zerolog"
 
-	"github.com/ggymm/gopkg/log"
+	"github.com/ggymm/gopkg/convert"
+	"github.com/ggymm/gopkg/logger"
 	"github.com/ggymm/gopkg/utils"
-	"github.com/ggymm/gopkg/utils/convert"
 )
 
 const (
@@ -62,7 +62,7 @@ func Init(c Config) (err error) {
 	}
 
 	// 初始化日志
-	auth.log = log.InitCustom(c.LogPath)
+	auth.log = logger.InitCustom(c.LogPath)
 
 	switch c.Store {
 	case Local:

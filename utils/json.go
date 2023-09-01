@@ -31,11 +31,11 @@ func JsonEncodesE(data any) (string, error) {
 }
 
 func JsonDecode(data string, v any) {
-	_ = JsonDecodeE(data, &v)
+	_ = JsonDecodeE(data, v)
 }
 
 func JsonDecodeE(data string, v any) error {
-	err := json.Unmarshal([]byte(data), &v)
+	err := json.Unmarshal([]byte(data), v)
 	if err != nil {
 		return err
 	}
@@ -43,11 +43,11 @@ func JsonDecodeE(data string, v any) error {
 }
 
 func JsonDecodes(data []byte, v any) {
-	_ = JsonDecodesE(data, &v)
+	_ = JsonDecodesE(data, v)
 }
 
 func JsonDecodesE(data []byte, v any) error {
-	err := json.Unmarshal(data, &v)
+	err := json.Unmarshal(data, v)
 	if err != nil {
 		return err
 	}

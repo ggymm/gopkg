@@ -4,7 +4,7 @@ import "testing"
 
 func TestRequest_Get(t *testing.T) {
 	resp, err := New().
-		Get("https://www.baidu.com").
+		Get("https://baidu.com").
 		Execute()
 	if err != nil {
 		t.Fatal(err)
