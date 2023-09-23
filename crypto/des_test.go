@@ -1,4 +1,4 @@
-package cryptor
+package crypto
 
 import (
 	"bytes"

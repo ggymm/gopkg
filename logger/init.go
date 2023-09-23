@@ -10,7 +10,7 @@ import (
 	"gopkg.in/natefinch/lumberjack.v2"
 )
 
-func InitCustom(filename ...string) zerolog.Logger {
+func Init(filename ...string) zerolog.Logger {
 	writers := io.MultiWriter(console())
 	if len(filename) > 0 {
 		if len(filename[0]) > 0 {

@@ -25,3 +25,11 @@ func MonthToSecond(month int) int {
 func YearToSecond(year int) int {
 	return MonthToSecond(year * 12)
 }
+
+func Format(format string, t time.Time) string {
+	return t.Format(format)
+}
+
+func FormatMilli(format string, t int64) string {
+	return Format(format, time.UnixMilli(t))
+}

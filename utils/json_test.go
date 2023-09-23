@@ -57,10 +57,27 @@ func TestJsonEncode(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := JsonEncode(tt.args.data); !reflect.DeepEqual(got, tt.want) {
+				t.Log(string(got))
 				t.Errorf("JsonEncode() = %v, want %v", got, tt.want)
 			}
 		})
 	}
+}
+
+func TestJsonEncode2(t *testing.T) {
+	type Result struct {
+		Msg     string      `json:"msg,omitempty"`
+		Data    interface{} `json:"data,omitempty"`
+		Success bool        `json:"success"`
+	}
+
+	var Err = func(msg string) (r Result) {
+		r.Msg = msg
+		r.Success = false
+		return r
+	}
+
+	t.Log(string(JsonEncode(Err("test"))))
 }
 
 func TestJsonEncodes(t *testing.T) {
