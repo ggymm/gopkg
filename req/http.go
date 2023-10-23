@@ -1,4 +1,4 @@
-package request
+package req
 
 type bodyType int
 

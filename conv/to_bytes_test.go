@@ -1,11 +1,11 @@
-package convert
+package conv
 
 import (
 	"reflect"
 	"testing"
 )
 
-func TestToBytes(t *testing.T) {
+func Test_ToBytes(t *testing.T) {
 	type args struct {
 		value interface{}
 	}

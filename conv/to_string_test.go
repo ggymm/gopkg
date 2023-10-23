@@ -1,8 +1,8 @@
-package convert
+package conv
 
 import "testing"
 
-func TestToString(t *testing.T) {
+func Test_ToString(t *testing.T) {
 	type args struct {
 		i interface{}
 	}
