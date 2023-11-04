@@ -1,6 +1,6 @@
 package gopkg
 
-import (
+/*import (
 	"os"
 	"os/signal"
 	"syscall"
@@ -42,3 +42,4 @@ func start() {
 func cleanup() {
 	println("cleanup")
 }
+*/
