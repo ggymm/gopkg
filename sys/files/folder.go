@@ -12,7 +12,6 @@ func CurrentPath() string {
 	if ok {
 		absPath = path.Dir(filename)
 	}
-
 	return absPath
 }
 

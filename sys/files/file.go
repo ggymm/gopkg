@@ -52,3 +52,8 @@ func CopyFile(src, dst string) (err error) {
 	// 修改目标文件权限
 	return os.Chmod(dst, srcFileInfo.Mode())
 }
+
+func Exist(path string) bool {
+	_, err := os.Stat(path)
+	return err == nil || os.IsExist(err)
+}

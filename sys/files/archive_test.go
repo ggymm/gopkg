@@ -1,6 +1,9 @@
-package utils
+package files
 
-import "testing"
+import (
+	"path/filepath"
+	"testing"
+)
 
 func TestExtractZip(t *testing.T) {
 	type args struct {
@@ -48,4 +51,9 @@ func TestCompressZip(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestFilepath(t *testing.T) {
+	dir := "/d/1/2/3"
+	t.Log(filepath.Dir(dir))
 }

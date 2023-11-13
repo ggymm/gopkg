@@ -1,13 +1,6 @@
 package gopkg
 
-/*import (
-	"os"
-	"os/signal"
-	"syscall"
-	"time"
-)
-
-func main() {
+/*func main() {
 	c := 1
 	sc := make(chan os.Signal, 1)
 	signal.Notify(sc, syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
@@ -41,5 +34,4 @@ func start() {
 
 func cleanup() {
 	println("cleanup")
-}
-*/
+}*/

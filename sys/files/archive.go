@@ -1,4 +1,4 @@
-package utils
+package files
 
 import (
 	"archive/zip"
@@ -44,9 +44,9 @@ func ExtractZip(name string, dstDir string) (string, error) {
 		)
 
 		// 如果文件目录不存在，则创建
-		dstDir := filepath.Dir(dstPath)
-		if _, err = os.Stat(dstDir); err != nil {
-			if err = os.MkdirAll(dstDir, os.ModePerm); err != nil {
+		dir := filepath.Dir(dstPath)
+		if _, err = os.Stat(dir); err != nil {
+			if err = os.MkdirAll(dir, os.ModePerm); err != nil {
 				return dstDir, err
 			}
 		}
