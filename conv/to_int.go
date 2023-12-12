@@ -8,7 +8,7 @@ import (
 	"strconv"
 )
 
-func toSignedE[T types.Signed](value any, options ...Options) (T, error) {
+func toSignedE[T types.Signed](value any) (T, error) {
 	var zero T
 	var errStr = fmt.Sprintf("unable to cast %#v of type %T to %T", value, value, zero)
 	switch v := value.(type) {
@@ -34,12 +34,7 @@ func toSignedE[T types.Signed](value any, options ...Options) (T, error) {
 		return T(v), nil
 	case string:
 		if v == "" {
-			switch options[0].Empty {
-			case ValueToZero:
-				return zero, nil
-			case ValueToError:
-				return zero, errors.New(errStr)
-			}
+			return zero, nil
 		} else {
 			// int，int16，int32，int64 转 string
 			vv, err := strconv.ParseInt(trimZero(v), 0, 0)
@@ -57,12 +52,7 @@ func toSignedE[T types.Signed](value any, options ...Options) (T, error) {
 		case 8:
 			return T(binary.BigEndian.Uint64(v)), nil
 		case 0:
-			switch options[0].Empty {
-			case ValueToZero:
-				return zero, nil
-			case ValueToError:
-				return zero, errors.New(errStr)
-			}
+			return zero, nil
 		default:
 			return zero, errors.New(errStr)
 		}
@@ -73,12 +63,7 @@ func toSignedE[T types.Signed](value any, options ...Options) (T, error) {
 			return zero, nil
 		}
 	case nil:
-		switch options[0].Nil {
-		case NilToZero:
-			return zero, nil
-		case NilToError:
-			return zero, errors.New(errStr)
-		}
+		return zero, nil
 	}
 	return zero, nil
 }

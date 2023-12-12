@@ -7,8 +7,7 @@ import (
 
 func TestToUnsignedE(t *testing.T) {
 	type args struct {
-		value   any
-		options []Options
+		value any
 	}
 	type testCase[T types.Unsigned] struct {
 		name    string
@@ -21,7 +20,7 @@ func TestToUnsignedE(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := ToUnsignedE[uint](tt.args.value, tt.args.options...)
+			got, err := ToUnsignedE[uint](tt.args.value)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("ToUnsignedE() error = %v, wantErr %v", err, tt.wantErr)
 				return

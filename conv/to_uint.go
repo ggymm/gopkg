@@ -7,7 +7,7 @@ import (
 	"strconv"
 )
 
-func ToUnsignedE[T types.Unsigned](value any, options ...Options) (T, error) {
+func ToUnsignedE[T types.Unsigned](value any) (T, error) {
 	var zero T
 	var errStr = fmt.Sprintf("unable to cast %#v of type %T to %T", value, value, zero)
 	switch v := value.(type) {
@@ -33,12 +33,7 @@ func ToUnsignedE[T types.Unsigned](value any, options ...Options) (T, error) {
 		return T(v), nil
 	case string:
 		if v == "" {
-			switch options[0].Empty {
-			case ValueToZero:
-				return zero, nil
-			case ValueToError:
-				return zero, fmt.Errorf(errStr)
-			}
+			return zero, nil
 		} else {
 			// uint，uint16，uint32，uint64 转 string
 			vv, err := strconv.ParseUint(trimZero(v), 0, 0)
@@ -56,12 +51,7 @@ func ToUnsignedE[T types.Unsigned](value any, options ...Options) (T, error) {
 		case 8:
 			return T(binary.BigEndian.Uint64(v)), nil
 		case 0:
-			switch options[0].Empty {
-			case ValueToZero:
-				return zero, nil
-			case ValueToError:
-				return zero, fmt.Errorf(errStr)
-			}
+			return zero, nil
 		default:
 			return zero, fmt.Errorf(errStr)
 		}
@@ -72,12 +62,7 @@ func ToUnsignedE[T types.Unsigned](value any, options ...Options) (T, error) {
 			return zero, nil
 		}
 	case nil:
-		switch options[0].Empty {
-		case ValueToZero:
-			return zero, nil
-		case ValueToError:
-			return zero, fmt.Errorf(errStr)
-		}
+		return zero, nil
 	}
 	return zero, nil
 }

@@ -7,8 +7,7 @@ import (
 
 func Test_toSignedE_Int(t *testing.T) {
 	type args struct {
-		value   any
-		options []Options
+		value any
 	}
 	type testCase[T types.Signed] struct {
 		name    string
@@ -33,7 +32,7 @@ func Test_toSignedE_Int(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := toSignedE[int](tt.args.value, tt.args.options...)
+			got, err := toSignedE[int](tt.args.value)
 			if (err != nil) != tt.wantErr {
 				t.Log("got:", got, "want:", tt.want)
 				t.Errorf("toSignedE() error = %v, wantErr %v", err, tt.wantErr)
@@ -49,8 +48,7 @@ func Test_toSignedE_Int(t *testing.T) {
 
 func Test_toSignedE_Int32(t *testing.T) {
 	type args struct {
-		value   any
-		options []Options
+		value any
 	}
 	type testCase[T types.Signed] struct {
 		name    string
@@ -63,7 +61,7 @@ func Test_toSignedE_Int32(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := toSignedE[int32](tt.args.value, tt.args.options...)
+			got, err := toSignedE[int32](tt.args.value)
 			if (err != nil) != tt.wantErr {
 				t.Log("got:", got, "want:", tt.want)
 				t.Errorf("toSignedE() error = %v, wantErr %v", err, tt.wantErr)

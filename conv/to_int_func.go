@@ -2,8 +2,8 @@ package conv
 
 // ------------------------------------------------ int ----------------------------------------------------------------
 
-func ToIntE(value any, options ...Options) (int, error) {
-	return toSignedE[int](value, options...)
+func ToIntE(value any) (int, error) {
+	return toSignedE[int](value)
 }
 
 func ToInt(value any) int {
@@ -22,17 +22,17 @@ func ToIntOrDefault(value any, defaultValue int) int {
 
 // ------------------------------------------------ int16 ----------------------------------------------------------------
 
-func ToInt16E(value any, options ...Options) (int16, error) {
-	return toSignedE[int16](value, options...)
+func ToInt16E(value any) (int16, error) {
+	return toSignedE[int16](value)
 }
 
-func ToInt16(value any, options ...Options) int16 {
-	v, _ := ToInt16E(value, options...)
+func ToInt16(value any) int16 {
+	v, _ := ToInt16E(value)
 	return v
 }
 
-func ToInt16OrDefault(value any, defaultValue int16, options ...Options) int16 {
-	v, err := ToInt16E(value, options...)
+func ToInt16OrDefault(value any, defaultValue int16) int16 {
+	v, err := ToInt16E(value)
 	if err != nil {
 		return defaultValue
 	} else {
@@ -42,17 +42,17 @@ func ToInt16OrDefault(value any, defaultValue int16, options ...Options) int16 {
 
 // ------------------------------------------------ int32 ----------------------------------------------------------------
 
-func ToInt32E(value any, options ...Options) (int32, error) {
-	return toSignedE[int32](value, options...)
+func ToInt32E(value any) (int32, error) {
+	return toSignedE[int32](value)
 }
 
-func ToInt32(value any, options ...Options) int32 {
-	v, _ := ToInt32E(value, options...)
+func ToInt32(value any) int32 {
+	v, _ := ToInt32E(value)
 	return v
 }
 
-func ToInt32OrDefault(value any, defaultValue int32, options ...Options) int32 {
-	v, err := ToInt32E(value, options...)
+func ToInt32OrDefault(value any, defaultValue int32) int32 {
+	v, err := ToInt32E(value)
 	if err != nil {
 		return defaultValue
 	} else {
@@ -62,17 +62,17 @@ func ToInt32OrDefault(value any, defaultValue int32, options ...Options) int32 {
 
 // ------------------------------------------------ int64 ----------------------------------------------------------------
 
-func ToInt64E(value any, options ...Options) (int64, error) {
-	return toSignedE[int64](value, options...)
+func ToInt64E(value any) (int64, error) {
+	return toSignedE[int64](value)
 }
 
-func ToInt64(value any, options ...Options) int64 {
-	v, _ := ToInt64E(value, options...)
+func ToInt64(value any) int64 {
+	v, _ := ToInt64E(value)
 	return v
 }
 
-func ToInt64OrDefault(value any, defaultValue int64, options ...Options) int64 {
-	v, err := ToInt64E(value, options...)
+func ToInt64OrDefault(value any, defaultValue int64) int64 {
+	v, err := ToInt64E(value)
 	if err != nil {
 		return defaultValue
 	} else {
