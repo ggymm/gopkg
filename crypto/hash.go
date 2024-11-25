@@ -7,9 +7,8 @@ import (
 	"crypto/sha512"
 	"encoding/base64"
 	"encoding/hex"
+	"errors"
 	"os"
-
-	"github.com/pkg/errors"
 )
 
 func MD5File(path string) (string, error) {
