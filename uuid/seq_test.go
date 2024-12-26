@@ -42,7 +42,7 @@ func TestClockSeqRace(t *testing.T) {
 				select {
 				case <-done:
 					return
-				case ch <- Must(NewUUID()):
+				case ch <- Must(_NewUUID()):
 				}
 			}
 		}()

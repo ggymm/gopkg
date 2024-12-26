@@ -7,7 +7,9 @@
 
 package uuid
 
-import "net"
+import (
+	"net"
+)
 
 var interfaces []net.Interface // cached list of interfaces
 

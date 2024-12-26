@@ -1,6 +1,8 @@
 package crypto
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestBase64(t *testing.T) {
 	src := "hello world"
