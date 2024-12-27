@@ -1,4 +1,4 @@
-package lumberjack
+package rolling
 
 import (
 	"os"

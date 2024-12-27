@@ -1,6 +1,6 @@
 //go:build !linux
 
-package lumberjack
+package rolling
 
 import (
 	"os"
