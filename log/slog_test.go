@@ -6,7 +6,7 @@ import (
 )
 
 func Test_Init(t *testing.T) {
-	Init()
+	Init("app.log")
 
 	slog.Info("hello")
 }
