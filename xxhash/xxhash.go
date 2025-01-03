@@ -4,6 +4,7 @@ package xxhash
 
 import (
 	"encoding/binary"
+	"encoding/hex"
 	"errors"
 	"math/bits"
 )
@@ -165,6 +166,10 @@ func (d *Digest) Sum64() uint64 {
 	h ^= h >> 32
 
 	return h
+}
+
+func (d *Digest) SumHex() string {
+	return hex.EncodeToString(d.Sum(nil))
 }
 
 const (
