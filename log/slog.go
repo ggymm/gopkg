@@ -4,11 +4,12 @@ import (
 	"io"
 	"log/slog"
 	"os"
+	"time"
 
 	"github.com/ggymm/gopkg/rolling"
 )
 
-func Init(filename string) {
+func New(filename string, level slog.Level) *slog.Logger {
 	writer := io.MultiWriter(
 		&rolling.Logger{
 			Filename:   filename,
@@ -19,7 +20,23 @@ func Init(filename string) {
 		io.MultiWriter(os.Stdout),
 	)
 	opt := &slog.HandlerOptions{
+		Level:     level,
 		AddSource: true,
+		ReplaceAttr: func(groups []string, attr slog.Attr) slog.Attr {
+			if attr.Key == slog.TimeKey {
+				if t, ok := attr.Value.Any().(time.Time); ok {
+					return slog.Attr{
+						Key:   attr.Key,
+						Value: slog.StringValue(t.Format("2006-01-02 15:04:05")),
+					}
+				}
+			}
+			return attr
+		},
 	}
-	slog.SetDefault(slog.New(slog.NewJSONHandler(writer, opt)))
+	return slog.New(slog.NewTextHandler(writer, opt))
+}
+
+func Init(filename string, level slog.Level) {
+	slog.SetDefault(New(filename, level))
 }
