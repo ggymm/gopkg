@@ -97,7 +97,7 @@ var constants = []struct {
 
 func testTest(t *testing.T, in string, tt test) {
 	uuid, err := Parse(in)
-	if ok := (err == nil); ok != tt.isuuid {
+	if ok := err == nil; ok != tt.isuuid {
 		t.Errorf("Parse(%s) got %v expected %v\b", in, ok, tt.isuuid)
 	}
 	if err != nil {
@@ -114,7 +114,7 @@ func testTest(t *testing.T, in string, tt test) {
 
 func testBytes(t *testing.T, in []byte, tt test) {
 	uuid, err := ParseBytes(in)
-	if ok := (err == nil); ok != tt.isuuid {
+	if ok := err == nil; ok != tt.isuuid {
 		t.Errorf("ParseBytes(%s) got %v expected %v\b", in, ok, tt.isuuid)
 	}
 	if err != nil {
@@ -235,11 +235,11 @@ func TestClockSeq(t *testing.T) {
 	}
 
 	SetClockSequence(-1)
-	uuid1, err := NewUUID()
+	uuid1, err := _NewUUID()
 	if err != nil {
 		t.Fatalf("could not create UUID: %v", err)
 	}
-	uuid2, err := NewUUID()
+	uuid2, err := _NewUUID()
 	if err != nil {
 		t.Fatalf("could not create UUID: %v", err)
 	}
@@ -249,7 +249,7 @@ func TestClockSeq(t *testing.T) {
 	}
 
 	SetClockSequence(-1)
-	uuid2, err = NewUUID()
+	uuid2, err = _NewUUID()
 	if err != nil {
 		t.Fatalf("could not create UUID: %v", err)
 	}
@@ -258,7 +258,7 @@ func TestClockSeq(t *testing.T) {
 	// two times we try again.
 	if uuid1.ClockSequence() == uuid2.ClockSequence() {
 		SetClockSequence(-1)
-		uuid2, err = NewUUID()
+		uuid2, err = _NewUUID()
 		if err != nil {
 			t.Fatalf("could not create UUID: %v", err)
 		}
@@ -268,7 +268,7 @@ func TestClockSeq(t *testing.T) {
 	}
 
 	SetClockSequence(0x1234)
-	uuid1, err = NewUUID()
+	uuid1, err = _NewUUID()
 	if err != nil {
 		t.Fatalf("could not create UUID: %v", err)
 	}
@@ -304,11 +304,11 @@ func TestCoding(t *testing.T) {
 }
 
 func TestVersion1(t *testing.T) {
-	uuid1, err := NewUUID()
+	uuid1, err := _NewUUID()
 	if err != nil {
 		t.Fatalf("could not create UUID: %v", err)
 	}
-	uuid2, err := NewUUID()
+	uuid2, err := _NewUUID()
 	if err != nil {
 		t.Fatalf("could not create UUID: %v", err)
 	}
@@ -579,7 +579,7 @@ func FuzzParse(f *testing.F) {
 		f.Add(strings.ToUpper(tt.in))
 	}
 	f.Fuzz(func(t *testing.T, in string) {
-		Parse(in)
+		_, _ = Parse(in)
 	})
 }
 
@@ -588,7 +588,7 @@ func FuzzParseBytes(f *testing.F) {
 		f.Add([]byte(tt.in))
 	}
 	f.Fuzz(func(t *testing.T, in []byte) {
-		ParseBytes(in)
+		_, _ = ParseBytes(in)
 	})
 }
 
@@ -602,7 +602,7 @@ func FuzzFromBytes(f *testing.F) {
 		0x5f, 0xfd, 0xce, 0x74, 0xfa, 0xd2,
 	})
 	f.Fuzz(func(t *testing.T, in []byte) {
-		FromBytes(in)
+		_, _ = FromBytes(in)
 	})
 }
 
@@ -900,7 +900,7 @@ func TestVersion7Monotonicity(t *testing.T) {
 type fakeRand struct{}
 
 func (g fakeRand) Read(bs []byte) (int, error) {
-	for i, _ := range bs {
+	for i := range bs {
 		bs[i] = 0x88
 	}
 	return len(bs), nil
